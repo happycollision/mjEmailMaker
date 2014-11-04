@@ -1,0 +1,185 @@
+<html>
+<head>
+  <style>
+    #params{
+      font-size: 1.5em;
+    }
+    #params input, #params textarea {
+      font-size: 1.25em;
+    }
+    #email {
+      width: 90%;
+      margin: auto;
+      border: 2px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <script>
+function DataBinder( object_id ) {
+  // Create a simple PubSub object
+  var pubSub = {
+        callbacks: {},
+
+        on: function( msg, callback ) {
+          this.callbacks[ msg ] = this.callbacks[ msg ] || [];
+          this.callbacks[ msg ].push( callback );
+        },
+
+        publish: function( msg ) {
+          this.callbacks[ msg ] = this.callbacks[ msg ] || []
+          for ( var i = 0, len = this.callbacks[ msg ].length; i < len; i++ ) {
+            this.callbacks[ msg ][ i ].apply( this, arguments );
+          }
+        }
+      },
+
+      data_attr = "data-bind-" + object_id,
+      message = object_id + ":change",
+
+      changeHandler = function( evt ) {
+        var target = evt.target || evt.srcElement, // IE8 compatibility
+            prop_name = target.getAttribute( data_attr );
+
+        if ( prop_name && prop_name !== "" ) {
+          pubSub.publish( message, prop_name, target.value );
+        }
+      };
+
+  // Listen to change events and proxy to PubSub
+  if ( document.addEventListener ) {
+    document.addEventListener( "change", changeHandler, false );
+  } else {
+    // IE8 uses attachEvent instead of addEventListener
+    document.attachEvent( "onchange", changeHandler );
+  }
+
+  // PubSub propagates changes to all bound elements
+  pubSub.on( message, function( evt, prop_name, new_val ) {
+    var elements = document.querySelectorAll("[" + data_attr + "=" + prop_name + "]"),
+        tag_name;
+
+    for ( var i = 0, len = elements.length; i < len; i++ ) {
+      tag_name = elements[ i ].tagName.toLowerCase();
+
+      if ( tag_name === "input" || tag_name === "textarea" || tag_name === "select" ) {
+        elements[ i ].value = new_val;
+      } else {
+        elements[ i ].innerHTML = new_val;
+      }
+    }
+  });
+
+  return pubSub;
+}
+
+function Email( uid ) {
+  var binder = new DataBinder( uid ),
+
+      user = {
+        attributes: {},
+
+        // The attribute setter publish changes using the DataBinder PubSub
+        set: function( attr_name, val ) {
+          this.attributes[ attr_name ] = val;
+          // Use the `publish` method
+          binder.publish( uid + ":change", attr_name, val, this );
+        },
+
+        get: function( attr_name ) {
+          return this.attributes[ attr_name ];
+        },
+
+        _binder: binder
+      };
+
+  // Subscribe to the PubSub
+  binder.on( uid + ":change", function( evt, attr_name, new_val, initiator ) {
+    if ( initiator !== user ) {
+      user.set( attr_name, new_val );
+    }
+  });
+
+  return user;
+}
+
+
+
+  </script>
+
+<div id="params">
+  <p>Greeting:<input type="text" data-bind-1="greeting" /></p>
+  <p>Username:<input type="text" data-bind-1="userName" /></p>
+  <p>UserID:<input type="text" data-bind-1="userID" /></p>
+  <p>Password:<input type="text" data-bind-1="password" /></p>
+  <p>Security Question:<input type="text" data-bind-1="securityQuestion" /></p>
+  <p>Answer to Secuity Question:<input type="text" data-bind-1="securityQuestionAnswer" /></p>
+  <p>Initial Order:<br><textarea data-bind-1="initialOrder"></textarea></p>
+  <p>Autoship Order:<br><textarea data-bind-1="autoshipOrder" ></textarea></p>
+</div>
+<p>Your generated email content is below.</p>
+<hr>
+
+<div id="email">
+  <p>
+    <span data-bind-1="greeting"></span>
+  </p>
+  <p>
+    Your account has been created. You can go on www.yoli.com anytime, User Login to see your account and manage your autoship.  
+  </p>
+
+  <p>
+    USER NAME: <span data-bind-1="userName"></span><br>
+    ID: <span data-bind-1="userID"></span><br>
+    PASSWORD: <span data-bind-1="password"></span><br>
+    SECURITY QUESTION: <span data-bind-1="securityQuestion"></span><br>
+    SECURITY QUESTION ANSWER: <span data-bind-1="securityQuestionAnswer"></span>
+  </p>
+
+  <p>You can change any of this info when you log in.</p>
+
+  <p>
+    <strong>Initial Order:</strong><br>
+    <span data-bind-1="initialOrder"></span> <br><br>
+
+    <strong>Autoship Order:</strong> (will ship in 4 weeks or you can push the date around)<br>
+    <span data-bind-1="autoshipOrder"></span>
+  </p>        
+
+  <p>You should see this on your account tomorrow.</p>
+
+            
+  <p><strong>Remember to watch the 30 day transformation video</strong> to get started and follow the meal card.</p>
+
+  <p>https://www.youtube.com/watch?v=GXasSqloTQo</p>
+
+  <p>And REMEMBER...eat when they tell you but more importantly eat if you're hungry.  Just choose the right type of foods for each day.  The first couple days are a little hard because, like we said its a detox...just hang in there after that you'll feel great.</p>
+
+  <p>The Yoli app is free and helpful for reminding you what to eat.</p>
+
+  <p>Empowered by Yoli &amp; Club Yoli groups on facebook has great recipes.</p>
+
+  <p>Also, natural RANCH, MAYO, PEANUT BUTTER, HEALTHY OILS are totally IN on all days.  Stay away from the light, or fat free versions they are usually filled with with extra sugar and artificial ingredients.  See the "TIPS FOR PROTEIN DAYS" section on your green 30 day transformation book to make sure you add these and Green veggies.</p>
+
+  <p>Great rule of thumb consume 1/2 your body weight in ounces of water and grams of protein intake daily.</p>
+
+  <p>Use this time to stay away from Pop, Booze &amp; Sugar.</p>
+
+  <p>Any questions? Do not hesitate to call, text or email.</p>
+
+  <p>Erin &amp; Mary Jo.</p>
+</div>
+<script>
+  var user = new Email( 1 );
+  user.set( "greeting", "" );
+  user.set( "userName", "" );
+  user.set( "userID", "" );
+  user.set( "password", "" );
+  user.set( "securityQuestion", "" );
+  user.set( "securityQuestionAnswer", "" );
+  user.set( "initialOrder", "" );
+  user.set( "autoshipOrder", "" );
+
+</script>
+</body></html>
