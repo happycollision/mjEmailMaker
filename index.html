@@ -52,10 +52,10 @@ function DataBinder( object_id ) {
 
   // Listen to change events and proxy to PubSub
   if ( document.addEventListener ) {
-    document.addEventListener( "change", changeHandler, false );
+    document.addEventListener( "input", changeHandler, false );
   } else {
     // IE8 uses attachEvent instead of addEventListener
-    document.attachEvent( "onchange", changeHandler );
+    document.attachEvent( "oninput", changeHandler );
   }
 
   // PubSub propagates changes to all bound elements
