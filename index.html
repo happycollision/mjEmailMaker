@@ -1,17 +1,27 @@
 <html>
 <head>
+  <title>MaryJo's Yoli Email Maker</title>
   <style>
+    body{
+      background-color: #ddd;
+      margin-bottom: 2em;
+      font-family: Helvetica, sans-serif;
+    }
+    header{
+      text-align: center;
+    }
     #params{
       font-size: 1.5em;
     }
     #params input, #params textarea {
-      font-size: 1.25em;
+      font-size: 1em;
     }
     #email {
-      width: 90%;
+      background-color: #fff;
+      max-width: 900px;
       margin: auto;
-      border: 2px solid black;
-      padding: 8px;
+      padding: 16px;
+      box-shadow: 0px 0px 20px #aaa;
     }
   </style>
 </head>
@@ -111,18 +121,21 @@ function Email( uid ) {
 
   </script>
 
+<header>
+  <h1>MaryJo's Yoli Email Maker</h1>
+  <span>a quick project by <a href="http://happycollision.com">Happy Collision</a></span>
+</header>
+
 <div id="params">
-  <p>Greeting:<input type="text" data-bind-1="greeting" /></p>
-  <p>Username:<input type="text" data-bind-1="userName" /></p>
-  <p>UserID:<input type="text" data-bind-1="userID" /></p>
-  <p>Password:<input type="text" data-bind-1="password" /></p>
-  <p>Security Question:<input type="text" data-bind-1="securityQuestion" /></p>
-  <p>Answer to Secuity Question:<input type="text" data-bind-1="securityQuestionAnswer" /></p>
+  <p>Greeting:<br><input type="text" data-bind-1="greeting" /></p>
+  <p>Username:<br><input type="text" data-bind-1="userName" /></p>
+  <p>UserID:<br><input type="text" data-bind-1="userID" /></p>
+  <p>Password:<br><input type="text" data-bind-1="password" /></p>
+  <p>Security Question:<br><input type="text" data-bind-1="securityQuestion" /></p>
+  <p>Answer to Secuity Question:<br><input type="text" data-bind-1="securityQuestionAnswer" /></p>
   <p>Initial Order:<br><textarea data-bind-1="initialOrder"></textarea></p>
   <p>Autoship Order:<br><textarea data-bind-1="autoshipOrder" ></textarea></p>
 </div>
-
-<hr>
 
 <div id="email">
   <p>
